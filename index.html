@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Placement Notice Generator</title>
+    <style>
+      :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e74c3c;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f7fa;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      .form-section,
+      .preview-section {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+      }
+
+      h2 {
+        color: var(--primary-color);
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--light-color);
+        grid-column: 1 / -1;
+      }
+
+      h3 {
+        color: var(--primary-color);
+        margin-top: 0;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--dark-color);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 16px;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        background-color: #fff;
+        color: #495057;
+        box-sizing: border-box;
+        margin: 5px 0 0 0;
+      }
+
+      .form-control:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+
+      .form-control::placeholder {
+        color: #6c757d;
+        opacity: 0.6;
+      }
+
+      input[type="text"].form-control,
+      input[type="url"].form-control,
+      input[type="number"].form-control,
+      select.form-control {
+        height: 48px;
+      }
+
+      textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 16px;
+        padding-right: 40px;
+      }
+
+      .checkbox-group,
+      .radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .checkbox-group label,
+      .radio-group label {
+        display: flex;
+        align-items: center;
+        font-weight: normal;
+        cursor: pointer;
+      }
+
+      .checkbox-group input[type="checkbox"],
+      .radio-group input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        position: relative;
+        top: 2px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      button {
+        background-color: var(--secondary-color);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s;
+        margin-right: 10px;
+      }
+
+      button:hover {
+        background-color: #2980b9;
+      }
+
+      .button-group {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .secondary-button {
+        background-color: var(--light-color);
+        color: var(--dark-color);
+      }
+
+      .secondary-button:hover {
+        background-color: #d5dbdb;
+      }
+
+      .danger-button {
+        background-color: var(--accent-color);
+      }
+
+      .danger-button:hover {
+        background-color: #c0392b;
+      }
+
+      .success-button {
+        background-color: var(--success-color);
+      }
+
+      .success-button:hover {
+        background-color: #219955;
+      }
+
+      .coordinator {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .coordinator input {
+        height: 42px;
+        margin: 0;
+      }
+
+      .preview-container {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 20px;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .preview-content {
+        white-space: pre-wrap;
+        font-family: "Courier New", Courier, monospace;
+        line-height: 1.5;
+      }
+
+      .letterhead {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+        gap: 20px;
+      }
+
+      .letterhead img {
+        height: 80px;
+        width: auto;
+      }
+
+      .letterhead-text {
+        flex: 1;
+      }
+
+      .letterhead .title {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+      }
+
+      .letterhead .address {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.4;
+      }
+
+      .tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+      }
+
+      .tab.active {
+        border-bottom-color: var(--secondary-color);
+        font-weight: bold;
+        color: var(--secondary-color);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .form-control {
+          padding: 10px 12px;
+          font-size: 15px;
+        }
+
+        input[type="text"].form-control,
+        input[type="url"].form-control,
+        input[type="number"].form-control,
+        select.form-control {
+          height: 44px;
+        }
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Placement Notice Generator</h2>
+
+      <div class="form-section">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('job-details')">
+            Job Details
+          </div>
+          <div class="tab" onclick="switchTab('application')">Links</div>
+          <div class="tab" onclick="switchTab('coordinators')">
+            Coordinators
+          </div>
+        </div>
+
+        <form id="placementForm">
+          <div id="job-details-tab" class="tab-content active">
+            <div class="form-group">
+              <label for="jobType">Job Type</label>
+              <select id="jobType" class="form-control" required>
+                <option value="">Select Job Type</option>
+                <option value="placement">Placement</option>
+                <option value="internship">Internship</option>
+                <option value="placement_with_internship">
+                  Placement with First Internship
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="company">Company Name</label>
+              <input
+                type="text"
+                id="company"
+                class="form-control"
+                placeholder="Enter Company Name"
+                required
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="eligibleStream">Eligible Stream</label>
+                <input
+                  type="text"
+                  id="eligibleStream"
+                  class="form-control"
+                  placeholder="e.g. Computer Science, Mechanical"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="jobLocation">Job Location</label>
+                <input
+                  type="text"
+                  id="jobLocation"
+                  class="form-control"
+                  placeholder="e.g. Pune, Remote"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="jobRole">Job Role</label>
+              <input
+                type="text"
+                id="jobRole"
+                class="form-control"
+                placeholder="e.g. Software Developer, Data Analyst"
+                required
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" id="packageGroup">
+                <label>Package Details</label>
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <input
+                    type="text"
+                    id="package"
+                    class="form-control"
+                    placeholder="e.g. 5-8 LPA"
+                    style="flex: 1"
+                  />
+                  <label style="white-space: nowrap">
+                    <input type="checkbox" id="performanceBased" /> Performance
+                    Based
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group" id="stipendGroup" style="display: none">
+                <label>Stipend Details</label>
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <input
+                    type="text"
+                    id="stipend"
+                    class="form-control"
+                    placeholder="e.g. 15-20k/month"
+                    style="flex: 1"
+                  />
+                  <label style="white-space: nowrap">
+                    <input type="checkbox" id="unpaid" /> Unpaid
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="form-group"
+              id="internshipDurationGroup"
+              style="display: none"
+            >
+              <label for="internshipDuration">Internship Duration</label>
+              <input
+                type="text"
+                id="internshipDuration"
+                class="form-control"
+                placeholder="e.g. 6 months"
+              />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="modeOfWork">Mode of Work</label>
+                <select id="modeOfWork" class="form-control" required>
+                  <option value="office">Office</option>
+                  <option value="work_from_home">Work from Home</option>
+                  <option value="hybrid">Hybrid</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="lastDate">Last Date to Apply</label>
+                <input
+                  type="text"
+                  id="lastDate"
+                  class="form-control"
+                  placeholder="e.g. 15th August 2023"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Joining Details</label>
+              <div class="radio-group">
+                <label>
+                  <input
+                    type="radio"
+                    name="joining"
+                    value="Immediate Joiner"
+                    checked
+                  />
+                  Immediate Joiner
+                </label>
+                <label>
+                  <input type="radio" name="joining" value="Custom" /> Custom
+                  Text
+                </label>
+              </div>
+              <input
+                type="text"
+                id="customJoining"
+                class="form-control"
+                placeholder="Enter custom joining text"
+                style="display: none; margin-top: 10px"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Job Responsibilities</label>
+              <div class="radio-group">
+                <label>
+                  <input
+                    type="radio"
+                    name="responsibility"
+                    value="Refer JD"
+                    checked
+                  />
+                  Refer JD
+                </label>
+                <label>
+                  <input type="radio" name="responsibility" value="Custom" />
+                  Custom Text
+                </label>
+              </div>
+              <textarea
+                id="customResponsibility"
+                class="form-control"
+                placeholder="Enter custom responsibility details"
+                style="display: none; margin-top: 10px"
+              ></textarea>
+            </div>
+          </div>
+
+          <div id="application-tab" class="tab-content">
+            <div class="form-group">
+              <label for="googleForm">Google Form Link</label>
+              <input
+                type="url"
+                id="googleForm"
+                class="form-control"
+                placeholder="https://forms.google.com/..."
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="whatsappGroup">WhatsApp Group Link</label>
+              <input
+                type="url"
+                id="whatsappGroup"
+                class="form-control"
+                placeholder="https://chat.whatsapp.com/..."
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Select Eligible Batches</label>
+              <div class="checkbox-group">
+                <label
+                  ><input type="checkbox" id="batch2020" value="2020" />
+                  2020</label
+                >
+                <label
+                  ><input type="checkbox" id="batch2021" value="2021" />
+                  2021</label
+                >
+                <label
+                  ><input type="checkbox" id="batch2022" value="2022" />
+                  2022</label
+                >
+                <label
+                  ><input type="checkbox" id="batch2023" value="2023" />
+                  2023</label
+                >
+                <label
+                  ><input type="checkbox" id="batch2024" value="2024" />
+                  2024</label
+                >
+                <label
+                  ><input type="checkbox" id="batch2025" value="2025" />
+                  2025</label
+                >
+                <label
+                  ><input type="checkbox" id="batch2026" value="2026" />
+                  2026</label
+                >
+                <label
+                  ><input type="checkbox" id="batch2027" value="2027" />
+                  2027</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div id="coordinators-tab" class="tab-content">
+            <div class="form-group">
+              <label>Placement Coordinators</label>
+              <div id="coordinatorsList"></div>
+              <button
+                type="button"
+                class="secondary-button"
+                onclick="addCoordinator()"
+              >
+                + Add Coordinator
+              </button>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button
+              type="button"
+              class="success-button"
+              onclick="generateNotice()"
+            >
+              Generate Notice
+            </button>
+            <button
+              type="button"
+              class="secondary-button"
+              id="copyButton"
+              style="display: none"
+            >
+              Copy Notice
+            </button>
+            <button
+              type="button"
+              class="secondary-button"
+              id="downloadPdfButton"
+              style="display: none"
+            >
+              Download PDF
+            </button>
+            <button
+              type="button"
+              class="secondary-button"
+              id="copyWhatsappMessage"
+            >
+              Share via WhatsApp
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="preview-section">
+        <h3>Notice Preview</h3>
+        <div class="letterhead">
+          <img src="Logo 2.png" alt="Indira Group Logo" id="logoImage" />
+          <div class="letterhead-text">
+            <div class="title">Indira Group of Institutes</div>
+            <div class="address">
+              Address: 123, XYZ Road, Pune, Maharashtra, India<br />
+              Phone: +91 123 456 7890 | Email: info@indira.edu | Website:  indirauniversity.edu.in
+            </div>
+          </div>
+        </div>
+      
+        <div class="preview-container">
+          <div id="generatedNotice" class="preview-content">
+            Your generated notice will appear here...
+          </div>
+        </div>
+      </div>
+
+    <script>
+      const { jsPDF } = window.jspdf;
+      
+      function switchTab(tabId) {
+        document.querySelectorAll(".tab-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        document.getElementById(tabId + "-tab").classList.add("active");
+        event.currentTarget.classList.add("active");
+      }
+
+      const jobTypeElement = document.getElementById("jobType");
+      const packageGroup = document.getElementById("packageGroup");
+      const stipendGroup = document.getElementById("stipendGroup");
+      const internshipDurationGroup = document.getElementById(
+        "internshipDurationGroup"
+      );
+
+      jobTypeElement.addEventListener("change", function () {
+        const jobType = jobTypeElement.value;
+        packageGroup.style.display =
+          jobType === "placement_with_internship" || jobType === "placement"
+            ? "block"
+            : "none";
+        stipendGroup.style.display = jobType !== "placement" ? "block" : "none";
+        internshipDurationGroup.style.display =
+          jobType === "internship" || jobType === "placement_with_internship"
+            ? "block"
+            : "none";
+      });
+
+      const joiningRadios = document.getElementsByName("joining");
+      const customJoiningTextField = document.getElementById("customJoining");
+
+      joiningRadios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          customJoiningTextField.style.display =
+            this.value === "Custom" ? "block" : "none";
+        });
+      });
+
+      const responsibilityRadios = document.getElementsByName("responsibility");
+      const customResponsibilityTextField = document.getElementById(
+        "customResponsibility"
+      );
+
+      responsibilityRadios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          customResponsibilityTextField.style.display =
+            this.value === "Custom" ? "block" : "none";
+        });
+      });
+
+      function addCoordinator() {
+        const div = document.createElement("div");
+        div.className = "coordinator";
+        div.innerHTML = `
+          <input type="text" placeholder="Name" class="coord-name form-control" required />
+          <input type="text" placeholder="Phone" class="coord-phone form-control" required />
+          <button type="button" class="danger-button" onclick="this.parentElement.remove()">Remove</button>
+        `;
+        document.getElementById("coordinatorsList").appendChild(div);
+      }
+
+      function generateNotice() {
+        const company = document.getElementById("company").value;
+        const eligibleStream = document.getElementById("eligibleStream").value;
+        const jobLocation = document.getElementById("jobLocation").value;
+        const jobRole = document.getElementById("jobRole").value;
+        const packageText = document.getElementById("package").value;
+        const stipendText = document.getElementById("stipend").value;
+        const internshipDurationText =
+          document.getElementById("internshipDuration").value;
+        const lastDate = document.getElementById("lastDate").value;
+        const googleForm = document.getElementById("googleForm").value;
+        const whatsappGroup = document.getElementById("whatsappGroup").value;
+        const coordinators = document.querySelectorAll(".coordinator");
+
+        const batches = [];
+        document
+          .querySelectorAll('.checkbox-group input[type="checkbox"]:checked')
+          .forEach((checkbox) => {
+            batches.push(checkbox.value);
+          });
+
+        const coordinatorsText = Array.from(coordinators)
+          .map(
+            (coord) =>
+              `Name: ${coord.querySelector(".coord-name").value}, Phone: ${
+                coord.querySelector(".coord-phone").value
+              }`
+          )
+          .join("\n");
+
+        let joiningText = "Immediate Joiner";
+        if (
+          document.querySelector('input[name="joining"]:checked').value ===
+          "Custom"
+        ) {
+          joiningText = customJoiningTextField.value || "Immediate Joiner";
+        }
+
+        let responsibilityText = "Refer JD";
+        if (
+          document.querySelector('input[name="responsibility"]:checked')
+            .value === "Custom"
+        ) {
+          responsibilityText =
+            customResponsibilityTextField.value || "Refer JD";
+        }
+
+        let packageTextFormatted = packageText;
+        if (
+          document.getElementById("performanceBased").checked &&
+          packageText
+        ) {
+          packageTextFormatted = `${packageText} (Based on performance)`;
+        }
+
+        let stipendTextFormatted = stipendText;
+        if (document.getElementById("unpaid").checked && stipendText) {
+          stipendTextFormatted = `${stipendText} (Unpaid)`;
+        }
+
+        const modeOfWork = document.getElementById("modeOfWork").value;
+
+        let notice = `
+*FINAL PLACEMENT NOTICE*
+For *${batches.join(", ")}* Batch
+
+*Company:* ${company}
+
+*Eligible Stream:* ${eligibleStream}
+
+*Job Location:* ${jobLocation}
+
+*Job Role:* ${jobRole}
+
+`;
+
+        if (jobTypeElement.value !== "internship") {
+          notice += `\n*Package:* ${packageTextFormatted}\n\n`;
+          if (stipendGroup.style.display !== "none") {
+            notice += `*Stipend:* ${stipendTextFormatted}\n\n`;
+            notice += `*Internship Duration:* ${internshipDurationText}\n\n`;
+          }
+        }
+
+        if (jobTypeElement.value === "internship") {
+          notice += `\n*Stipend:* ${stipendTextFormatted}\n\n`;
+          notice += `*Internship Duration:* ${internshipDurationText}\n\n`;
+        }
+
+        notice += `
+*Joining:* ${joiningText}\n
+
+*Mode of Work:* ${
+          modeOfWork.charAt(0).toUpperCase() +
+          modeOfWork.slice(1).replace("_", " ")
+        } 
+
+*Responsibility:* ${responsibilityText}\n
+
+All the eligible and interested students need to register at the below-mentioned link and join the WhatsApp group on or before *${lastDate}*.
+
+*Google Form:* ${googleForm}
+
+*WhatsApp Group:* ${whatsappGroup}
+
+*Placement Coordinators:*
+${coordinatorsText}
+
+*Thanks & Regards,*
+Anand Solanki
+Deputy Director- Placement & Corporate Relations
+Direct No: 8668362727
+Indira Group of Institutes.
+Pune.`;
+
+        notice = notice.trim();
+
+        document.getElementById("generatedNotice").textContent = notice;
+        document.getElementById("copyButton").style.display = "inline-block";
+        document.getElementById("downloadPdfButton").style.display = "inline-block";
+      }
+
+      document
+        .getElementById("copyButton")
+        .addEventListener("click", function () {
+          const text = document.getElementById("generatedNotice").textContent;
+          navigator.clipboard.writeText(text).then(
+            () => alert("Notice copied to clipboard!"),
+            (err) => alert("Failed to copy: " + err)
+          );
+        });
+
+      document
+        .getElementById("copyWhatsappMessage")
+        .addEventListener("click", function () {
+          const whatsappMessage =
+            document.getElementById("generatedNotice").textContent;
+          const whatsappLink = `https://wa.me/?text=${encodeURIComponent(
+            whatsappMessage
+          )}`;
+          window.open(whatsappLink, "_blank");
+        });
+
+      document
+        .getElementById("downloadPdfButton")
+        .addEventListener("click", function () {
+          generatePdf();
+        });
+
+      function generatePdf() {
+        const company = document.getElementById("company").value;
+        const noticeText = document.getElementById("generatedNotice").textContent;
+        
+        const doc = new jsPDF();
+        
+        doc.setProperties({
+          title: `Placement Notice - ${company}`,
+          subject: 'Placement Notice',
+          author: 'Indira Group of Institutes',
+          keywords: 'placement, notice, job',
+          creator: 'Placement Notice Generator'
+        });
+        
+        try {
+          const logoImg = document.getElementById("logoImage");
+          if (logoImg && logoImg.src) {
+            doc.addImage(logoImg.src, 'JPEG', 15, 15, 30, 0);
+          }
+        } catch (e) {
+          console.log("Could not add logo to PDF", e);
+        }
+        
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("Indira Group of Institutes", 50, 20);
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("Address: 123, XYZ Road, Pune, Maharashtra, India", 50, 27);
+        doc.text("Phone: +91 123 456 7890 | Email: info@indira.edu | Website: indirauniversity.edu.in", 50, 34);
+        
+        doc.setDrawColor(200, 200, 200);
+        doc.line(15, 40, 195, 40);
+        
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("PLACEMENT NOTICE", 105, 50, { align: 'center' });
+        
+        const formattedNotice = noticeText
+          .replace(/\*/g, '')
+          .split('\n')
+          .filter(line => line.trim() !== '');
+        
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        
+        let yPosition = 60;
+        formattedNotice.forEach(line => {
+          if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 20;
+          }
+          
+          const lines = doc.splitTextToSize(line, 180);
+          doc.text(lines, 15, yPosition);
+          yPosition += lines.length * 7;
+        });
+        
+        doc.save(`Placement_Notice_${company.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
+      }
+    </script>
+  </body>
+</html>
