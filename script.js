@@ -259,31 +259,26 @@ Pune.`;
     }
     
     // Header section - Centered
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text("Indira Group of Institutes", centerX, 25, { align: 'center' });
-    
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text("Address: 123, XYZ Road, Pune, Maharashtra, India", centerX, 32, { align: 'center' });
-    doc.text("Phone: +91 123 456 7890 | Email: info@indira.edu | Website: indirauniversity.edu.in", 
-             centerX, 39, { align: 'center' });
-       doc.text(" ", 
-             centerX, 39, { align: 'center' });
-    
-    // Centered divider line
-    doc.setDrawColor(100, 100, 100);
-    doc.setLineWidth(0.3);
-    doc.line(15, 45, pageWidth - 15, 45);
-    
-    // Main title - Centered with hierarchy
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text("INDIRA", centerX, 55, { align: 'center' });
-    
-    doc.setFontSize(16);
-    doc.text("PLACEMENT NOTICE", centerX, 65, { align: 'center' });
-    
+doc.setFontSize(16);
+doc.setFont("helvetica", "bold");
+doc.text("Indira Group of Institutes", centerX, 25, { align: 'center' });
+
+doc.setFontSize(10);
+doc.setFont("helvetica", "normal");
+doc.text("Address: 123, XYZ Road, Pune, Maharashtra, India", centerX, 32, { align: 'center' });
+doc.text("Phone: +91 123 456 7890 | Email: info@indira.edu | Website: indirauniversity.edu.in", 
+         centerX, 39, { align: 'center' });
+doc.text(" ", centerX, 46, { align: 'center' }); // Extra blank line
+
+// Centered divider line
+doc.setDrawColor(100, 100, 100);
+doc.setLineWidth(0.3);
+doc.line(15, 52, pageWidth - 15, 52); // Adjusted y-position for the line
+
+// Main title
+doc.setFontSize(16);
+doc.setFont("helvetica", "bold");
+doc.text("PLACEMENT NOTICE", centerX, 62, { align: 'center' }); // Adjusted y-position
     // Process notice text
     const formattedNotice = noticeText
         .replace(/\*/g, '')
