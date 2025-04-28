@@ -216,37 +216,37 @@ Pune.`;
         });
 
       function generatePdf() {
-          const company = document.getElementById("company").value;
-          const noticeText = document.getElementById("generatedNotice").textContent;
-          
-          // Create PDF with better settings
-          const doc = new jsPDF({
-              orientation: 'portrait',
-              unit: 'mm',
-              format: 'a4',
-              compress: true
-          });
-          
-          // Set document properties
-          doc.setProperties({
-              title: `Placement Notice - ${company}`,
-              subject: 'Placement Notice',
-              author: 'Indira Group of Institutes',
-              keywords: 'placement, notice, job',
-              creator: 'Placement Notice Generator',
-              creationDate: new Date()
-          });
-          
-          // Add metadata
-          doc.setLanguage('en-IN');
-          doc.setFont('helvetica');
-          
-          // Center-aligned letterhead
-          const pageWidth = doc.internal.pageSize.getWidth();
-          const centerX = pageWidth / 2;
-          
-          // Add logo and header with improved styling
-    try {
+    const company = document.getElementById("company").value;
+    const noticeText = document.getElementById("generatedNotice").textContent;
+    
+    // Create PDF with better settings
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+    });
+    
+    // Set document properties
+    doc.setProperties({
+        title: `Placement Notice - ${company}`,
+        subject: 'Placement Notice',
+        author: 'Indira Group of Institutes',
+        keywords: 'placement, notice, job',
+        creator: 'Placement Notice Generator',
+        creationDate: new Date()
+    });
+    
+    // Add metadata
+    doc.setLanguage('en-IN');
+    doc.setFont('helvetica');
+    
+    // Center-aligned letterhead
+const pageWidth = doc.internal.pageSize.getWidth();
+const centerX = pageWidth / 2;
+
+// Try to add left-aligned logo
+try {
         const logoImg = document.getElementById("logoImage");
         if (logoImg && logoImg.src) {
             const logoWidth = 25;
@@ -257,78 +257,75 @@ Pune.`;
         console.log("Could not add logo to PDF", e);
     }
     
-    // Header section with better typography
-    doc.setFont("helvetica", "bold");
+
+// Header section - Centered (same Y position as logo)
+doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.setTextColor(0, 51, 102); // Dark blue color
-    doc.text("Indira Group of Institutes", centerX, 22, { align: 'center' });
-    
-    doc.setFont("helvetica", "normal");
+     doc.text("Indira Group of Institutes", centerX, 22, { align: 'center' });
+   doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(70, 70, 70); // Dark gray
     doc.text("Address: 89/2-A, New Pune-Mumbai Highway, Tathawade, Pune - 411033", centerX, 28, { align: 'center' });
     doc.text("Phone: +91 20 6674 1234 | Email: placement@indira.edu | Website: www.indira.edu", centerX, 33, { align: 'center' });
 
-          
-          // Centered divider line
-          doc.setDrawColor(100, 100, 100);
-          doc.setLineWidth(0.3);
-          doc.line(15, 45, pageWidth - 15, 45);
-          
-          // Main title - Centered with hierarchy
-          doc.setFontSize(14);
-          doc.setFont("helvetica", "bold");
-          doc.text("INDIRA", centerX, 55, { align: 'center' });
-          
-          doc.setFontSize(16);
-          doc.text("PLACEMENT NOTICE", centerX, 65, { align: 'center' });
-          
-          // Process notice text
-          const formattedNotice = noticeText
-              .replace(/\*/g, '')
-              .split('\n')
-              .filter(line => line.trim() !== '');
-          
-          // Main content - Left aligned but centered on page
-          doc.setFontSize(11);
-          doc.setFont("helvetica", "normal");
-          
-          let yPosition = 75;
-          const lineHeight = 7;
-          const contentWidth = 150; // Narrower for better readability
-          const contentLeft = (pageWidth - contentWidth) / 2;
-          
-          formattedNotice.forEach(line => {
-              if (yPosition > 270) {
-                  doc.addPage();
-                  yPosition = 20;
-              }
-              
-              // Handle different text styles
-              if (line.toUpperCase() === line && line.match(/[A-Z]/)) {
-                  // Uppercase lines (like headings)
-                  doc.setFont("helvetica", "bold");
-                  const lines = doc.splitTextToSize(line, contentWidth);
-                  doc.text(lines, centerX, yPosition, { align: 'center' });
-                  yPosition += lines.length * lineHeight;
-                  doc.setFont("helvetica", "normal");
-              } else {
-                  // Regular text
-                  const lines = doc.splitTextToSize(line, contentWidth);
-                  doc.text(lines, contentLeft, yPosition, { align: 'left' });
-                  yPosition += lines.length * lineHeight;
-              }
-          });
-          
-          // Footer
-          const footerY = 285;
-          doc.setFontSize(8);
-          doc.setFont("helvetica", "italic");
-          doc.text("Generated by Indira Group of Institutes Placement Cell", centerX, footerY, { align: 'center' });
-          doc.text(new Date().toLocaleDateString('en-IN'), pageWidth - 15, footerY, { align: 'right' });
-          
-          // Save PDF
-          const sanitizedCompany = company.replace(/[^a-zA-Z0-9\s]/g, '_').replace(/\s+/g, '_');
-          const filename = `Placement_Notice_${sanitizedCompany}_${new Date().toISOString().slice(0, 10)}.pdf`;
-          doc.save(filename);
-      }
+
+doc.text(" ", centerX, 46, { align: 'center' }); // Extra blank line
+
+// Centered divider line
+doc.setDrawColor(100, 100, 100);
+doc.setLineWidth(0.3);
+doc.line(15, 52, pageWidth - 15, 52);
+
+// Main title
+doc.setFontSize(16);
+doc.setFont("helvetica", "bold");
+doc.text("PLACEMENT NOTICE", centerX, 62, { align: 'center' }); // Adjusted y-position
+    // Process notice text
+    const formattedNotice = noticeText
+        .replace(/\*/g, '')
+        .split('\n')
+        .filter(line => line.trim() !== '');
+    
+    // Main content - Left aligned but centered on page
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    
+    let yPosition = 75;
+    const lineHeight = 7;
+    const contentWidth = 150; // Narrower for better readability
+    const contentLeft = (pageWidth - contentWidth) / 2;
+    
+    formattedNotice.forEach(line => {
+        if (yPosition > 270) {
+            doc.addPage();
+            yPosition = 20;
+        }
+        
+        // Handle different text styles
+        if (line.toUpperCase() === line && line.match(/[A-Z]/)) {
+            // Uppercase lines (like headings)
+            doc.setFont("helvetica", "bold");
+            const lines = doc.splitTextToSize(line, contentWidth);
+            doc.text(lines, centerX, yPosition, { align: 'center' });
+            yPosition += lines.length * lineHeight;
+            doc.setFont("helvetica", "normal");
+        } else {
+            // Regular text
+            const lines = doc.splitTextToSize(line, contentWidth);
+            doc.text(lines, contentLeft, yPosition, { align: 'left' });
+            yPosition += lines.length * lineHeight;
+        }
+    });
+    
+    // Footer
+    const footerY = 285;
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+    doc.text("Generated by Indira Group of Institutes Placement Cell", centerX, footerY, { align: 'center' });
+    doc.text(new Date().toLocaleDateString('en-IN'), pageWidth - 15, footerY, { align: 'right' });
+    
+    // Save PDF
+    const sanitizedCompany = company.replace(/[^a-zA-Z0-9\s]/g, '_').replace(/\s+/g, '_');
+    const filename = `Placement_Notice_${sanitizedCompany}_${new Date().toISOString().slice(0, 10)}.pdf`;
+    doc.save(filename);
+}
