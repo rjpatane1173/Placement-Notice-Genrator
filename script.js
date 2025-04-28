@@ -216,66 +216,62 @@ document
   });
 
 function generatePdf() {
-  const company = document.getElementById("company").value;
-  const noticeText = document.getElementById("generatedNotice").textContent;
-  
-  // Create PDF with better settings
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-    compress: true
-  });
-  
-  // Set document properties
-  doc.setProperties({
-    title: `Placement Notice - ${company}`,
-    subject: 'Placement Notice',
-    author: 'Indira Group of Institutes',
-    keywords: 'placement, notice, job',
-    creator: 'Placement Notice Generator',
-    creationDate: new Date()
-  });
-  
-  // Add metadata
-  doc.setLanguage('en-IN');
-  doc.setFont('helvetica');
-  
-  // Page dimensions
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const centerX = pageWidth / 2;
-  const margin = 15;
-  
-  // Add logo (if available)
-  try {
-    const logoImg = document.getElementById("logoImage");
-    if (logoImg && logoImg.src) {
-      const logoWidth = 30;
-      const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
-      const logoX = margin;
-      const logoY = margin;
-      doc.addImage(logoImg.src, 'JPEG', logoX, logoY, logoWidth, logoHeight);
+    const company = document.getElementById("company").value;
+    const noticeText = document.getElementById("generatedNotice").textContent;
+    
+    // Create PDF with better settings
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+    });
+    
+    // Set document properties
+    doc.setProperties({
+        title: `Placement Notice - ${company}`,
+        subject: 'Placement Notice',
+        author: 'Indira Group of Institutes',
+        keywords: 'placement, notice, job',
+        creator: 'Placement Notice Generator'
+    });
+    
+    // Set document language and font
+    doc.setLanguage('en-IN');
+    
+    // Page dimensions
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const centerX = pageWidth / 2;
+    const margin = 15;
+    
+    // Add logo and header with improved styling
+    try {
+        const logoImg = document.getElementById("logoImage");
+        if (logoImg && logoImg.src) {
+            const logoWidth = 25;
+            const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
+            doc.addImage(logoImg.src, 'JPEG', margin, 15, logoWidth, logoHeight);
+        }
+    } catch (e) {
+        console.log("Could not add logo to PDF", e);
     }
-  } catch (e) {
-    console.log("Could not add logo to PDF", e);
-  }
-  
-  // Header section
-  doc.setFontSize(16);
-  doc.setFont("helvetica", "bold");
-  doc.text("INDIRA GROUP OF INSTITUTES", centerX, margin + 10, { align: 'center' });
-  
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text("(Approved by AICTE, Affiliated to Savitribai Phule Pune University)", centerX, margin + 16, { align: 'center' });
-  doc.text("Pune, Maharashtra, India", centerX, margin + 22, { align: 'center' });
-  
-  // Divider line
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.5);
-  doc.line(margin, margin + 28, pageWidth - margin, margin + 28);
-  
+    
+    // Header section with better typography
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(0, 51, 102); // Dark blue color
+    doc.text("Indira Group of Institutes", centerX, 22, { align: 'center' });
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(70, 70, 70); // Dark gray
+    doc.text("Address: 89/2-A, New Pune-Mumbai Highway, Tathawade, Pune - 411033", centerX, 28, { align: 'center' });
+    doc.text("Phone: +91 20 6674 1234 | Email: placement@indira.edu | Website: www.indira.edu", centerX, 33, { align: 'center' });
+    
+    // Decorative divider line
+    doc.setDrawColor(0, 102, 204); // Blue color
+    doc.setLineWidth(0.5);
+    doc.line(margin, 38, pageWidth - margin, 38);
   // Main title
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
