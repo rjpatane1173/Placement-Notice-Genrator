@@ -233,99 +233,158 @@ Pune.`;
         subject: 'Placement Notice',
         author: 'Indira Group of Institutes',
         keywords: 'placement, notice, job',
-        creator: 'Placement Notice Generator',
-        creationDate: new Date()
+        creator: 'Placement Notice Generator'
     });
     
-    // Add metadata
+    // Set document language and font
     doc.setLanguage('en-IN');
-    doc.setFont('helvetica');
     
-    // Center-aligned letterhead
-const pageWidth = doc.internal.pageSize.getWidth();
-const centerX = pageWidth / 2;
-
-// Try to add left-aligned logo
-try {
-    const logoImg = document.getElementById("logoImage");
-    if (logoImg && logoImg.src) {
-        const logoWidth = 30;
-        const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
-        const logoX = 15; // Fixed left position
-        const logoY = 15; // Same Y position as your header text
-        doc.addImage(logoImg.src, 'JPEG', logoX, logoY, logoWidth, logoHeight);
+    // Page dimensions
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const centerX = pageWidth / 2;
+    const margin = 15;
+    
+    // Add logo and header with improved styling
+    try {
+        const logoImg = document.getElementById("logoImage");
+        if (logoImg && logoImg.src) {
+            const logoWidth = 25;
+            const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
+            doc.addImage(logoImg.src, 'JPEG', margin, 15, logoWidth, logoHeight);
+        }
+    } catch (e) {
+        console.log("Could not add logo to PDF", e);
     }
-} catch (e) {
-    console.log("Could not add logo to PDF", e);
-}
-
-// Header section - Centered (same Y position as logo)
-doc.setFontSize(16);
-doc.setFont("helvetica", "bold");
-doc.text("Indira Group of Institutes", centerX, 25, { align: 'center' });
-
-doc.setFontSize(10);
-doc.setFont("helvetica", "normal");
-doc.text("Address: 123, XYZ Road, Pune, Maharashtra, India", centerX, 32, { align: 'center' });
-doc.text("Phone: +91 123 456 7890 | Email: info@indira.edu | Website: indirauniversity.edu.in", 
-         centerX, 39, { align: 'center' });
-doc.text(" ", centerX, 46, { align: 'center' }); // Extra blank line
-
-// Centered divider line
-doc.setDrawColor(100, 100, 100);
-doc.setLineWidth(0.3);
-doc.line(15, 52, pageWidth - 15, 52);
-
-// Main title
-doc.setFontSize(16);
-doc.setFont("helvetica", "bold");
-doc.text("PLACEMENT NOTICE", centerX, 62, { align: 'center' }); // Adjusted y-position
-    // Process notice text
+    
+    // Header section with better typography
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(0, 51, 102); // Dark blue color
+    doc.text("Indira Group of Institutes", centerX, 22, { align: 'center' });
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(70, 70, 70); // Dark gray
+    doc.text("Address: 89/2-A, New Pune-Mumbai Highway, Tathawade, Pune - 411033", centerX, 28, { align: 'center' });
+    doc.text("Phone: +91 20 6674 1234 | Email: placement@indira.edu | Website: www.indira.edu", centerX, 33, { align: 'center' });
+    
+    // Decorative divider line
+    doc.setDrawColor(0, 102, 204); // Blue color
+    doc.setLineWidth(0.5);
+    doc.line(margin, 38, pageWidth - margin, 38);
+    
+    // Main title with accent
+    doc.setFontSize(16);
+    doc.setTextColor(0, 51, 102); // Dark blue
+    doc.setFont("helvetica", "bold");
+    doc.text("PLACEMENT NOTICE", centerX, 50, { align: 'center' });
+    
+    // Add small decorative elements
+    doc.setDrawColor(200, 200, 200); // Light gray
+    doc.setLineWidth(0.2);
+    doc.line(centerX - 30, 52, centerX + 30, 52);
+    
+    // Process notice text with better formatting
     const formattedNotice = noticeText
-        .replace(/\*/g, '')
+        .replace(/\*/g, '') // Remove markdown asterisks
         .split('\n')
         .filter(line => line.trim() !== '');
     
-    // Main content - Left aligned but centered on page
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "normal");
+    // Main content styling
+    let yPosition = 60;
+    const lineHeight = 6;
+    const contentWidth = pageWidth - 2 * margin;
+    const contentLeft = margin;
     
-    let yPosition = 75;
-    const lineHeight = 7;
-    const contentWidth = 150; // Narrower for better readability
-    const contentLeft = (pageWidth - contentWidth) / 2;
+    doc.setFontSize(11);
+    doc.setTextColor(40, 40, 40); // Dark text
     
     formattedNotice.forEach(line => {
         if (yPosition > 270) {
             doc.addPage();
             yPosition = 20;
+            
+            // Add header to new pages
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Placement Notice - ${company}`, margin, 10);
+            doc.text(`Page ${doc.internal.getNumberOfPages()}`, pageWidth - margin, 10, { align: 'right' });
+            doc.setFontSize(11);
+            doc.setTextColor(40, 40, 40);
+            yPosition = 20;
         }
         
-        // Handle different text styles
-        if (line.toUpperCase() === line && line.match(/[A-Z]/)) {
-            // Uppercase lines (like headings)
+        // Section headings
+        if (line.endsWith(':')) {
             doc.setFont("helvetica", "bold");
-            const lines = doc.splitTextToSize(line, contentWidth);
-            doc.text(lines, centerX, yPosition, { align: 'center' });
-            yPosition += lines.length * lineHeight;
+            doc.setTextColor(0, 51, 102); // Dark blue
+            doc.text(line, contentLeft, yPosition);
+            yPosition += lineHeight;
             doc.setFont("helvetica", "normal");
-        } else {
-            // Regular text
+            doc.setTextColor(40, 40, 40);
+        } 
+        // Batch information
+        else if (line.includes('Batch') || line.includes('For')) {
+            doc.setFont("helvetica", "bold");
+            doc.text(line, centerX, yPosition, { align: 'center' });
+            yPosition += lineHeight * 1.2;
+            doc.setFont("helvetica", "normal");
+        }
+        // Important details
+        else if (line.includes('Company:') || line.includes('Package:') || line.includes('Stipend:')) {
+            doc.setFont("helvetica", "bold");
+            doc.text(line, contentLeft, yPosition);
+            yPosition += lineHeight;
+            doc.setFont("helvetica", "normal");
+        }
+        // Regular text
+        else {
             const lines = doc.splitTextToSize(line, contentWidth);
-            doc.text(lines, contentLeft, yPosition, { align: 'left' });
+            doc.text(lines, contentLeft, yPosition);
             yPosition += lines.length * lineHeight;
+        }
+        
+        // Add extra space after sections
+        if (line.trim() === '' || line.endsWith(':')) {
+            yPosition += lineHeight * 0.5;
         }
     });
     
-    // Footer
-    const footerY = 285;
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "italic");
-    doc.text("Generated by Indira Group of Institutes Placement Cell", centerX, footerY, { align: 'center' });
-    doc.text(new Date().toLocaleDateString('en-IN'), pageWidth - 15, footerY, { align: 'right' });
+    // Signature section
+    yPosition = Math.max(yPosition, 250);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 51, 102);
+    doc.text("Thanks & Regards,", margin, yPosition);
+    yPosition += lineHeight * 1.5;
     
-    // Save PDF
-    const sanitizedCompany = company.replace(/[^a-zA-Z0-9\s]/g, '_').replace(/\s+/g, '_');
+    doc.setFontSize(12);
+    doc.text("Anand Solanki", margin, yPosition);
+    yPosition += lineHeight;
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Deputy Director - Placement & Corporate Relations", margin, yPosition);
+    yPosition += lineHeight;
+    doc.text("Direct No: +91 86683 62727", margin, yPosition);
+    yPosition += lineHeight;
+    doc.text("Indira Group of Institutes, Pune", margin, yPosition);
+    
+    // Footer with decorative line
+    doc.setDrawColor(0, 102, 204);
+    doc.setLineWidth(0.3);
+    doc.line(margin, 280, pageWidth - margin, 280);
+    
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text("This is a system generated document. No signature required.", centerX, 285, { align: 'center' });
+    doc.text(new Date().toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    }), pageWidth - margin, 285, { align: 'right' });
+    
+    // Save PDF with proper filename
+    const sanitizedCompany = company.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
     const filename = `Placement_Notice_${sanitizedCompany}_${new Date().toISOString().slice(0, 10)}.pdf`;
     doc.save(filename);
 }
