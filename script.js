@@ -242,23 +242,24 @@ Pune.`;
     doc.setFont('helvetica');
     
     // Center-aligned letterhead
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const centerX = pageWidth / 2;
-    
-    // Try to add centered logo
-    try {
-        const logoImg = document.getElementById("logoImage");
-        if (logoImg && logoImg.src) {
-            const logoWidth = 30;
-            const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
-            const logoX = centerX - (logoWidth / 2);
-            doc.addImage(logoImg.src, 'JPEG', logoX, 15, logoWidth, logoHeight);
-        }
-    } catch (e) {
-        console.log("Could not add logo to PDF", e);
+const pageWidth = doc.internal.pageSize.getWidth();
+const centerX = pageWidth / 2;
+
+// Try to add left-aligned logo
+try {
+    const logoImg = document.getElementById("logoImage");
+    if (logoImg && logoImg.src) {
+        const logoWidth = 30;
+        const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
+        const logoX = 15; // Fixed left position
+        const logoY = 15; // Same Y position as your header text
+        doc.addImage(logoImg.src, 'JPEG', logoX, logoY, logoWidth, logoHeight);
     }
-    
-    // Header section - Centered
+} catch (e) {
+    console.log("Could not add logo to PDF", e);
+}
+
+// Header section - Centered (same Y position as logo)
 doc.setFontSize(16);
 doc.setFont("helvetica", "bold");
 doc.text("Indira Group of Institutes", centerX, 25, { align: 'center' });
@@ -273,7 +274,7 @@ doc.text(" ", centerX, 46, { align: 'center' }); // Extra blank line
 // Centered divider line
 doc.setDrawColor(100, 100, 100);
 doc.setLineWidth(0.3);
-doc.line(15, 52, pageWidth - 15, 52); // Adjusted y-position for the line
+doc.line(15, 52, pageWidth - 15, 52);
 
 // Main title
 doc.setFontSize(16);
