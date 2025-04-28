@@ -268,6 +268,8 @@ Pune.`;
     doc.text("Address: 123, XYZ Road, Pune, Maharashtra, India", centerX, 32, { align: 'center' });
     doc.text("Phone: +91 123 456 7890 | Email: info@indira.edu | Website: indirauniversity.edu.in", 
              centerX, 39, { align: 'center' });
+       doc.text(" ", 
+             centerX, 39, { align: 'center' });
     
     // Centered divider line
     doc.setDrawColor(100, 100, 100);
