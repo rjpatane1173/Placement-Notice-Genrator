@@ -247,28 +247,28 @@ const centerX = pageWidth / 2;
 
 // Try to add left-aligned logo
 try {
-        const logoImg = document.getElementById("logoImage");
-        if (logoImg && logoImg.src) {
-            const logoWidth = 25;
-            const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
-            doc.addImage(logoImg.src, 'JPEG', margin, 15, logoWidth, logoHeight);
-        }
-    } catch (e) {
-        console.log("Could not add logo to PDF", e);
+    const logoImg = document.getElementById("logoImage");
+    if (logoImg && logoImg.src) {
+        const logoWidth = 30;
+        const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
+        const logoX = 15; // Fixed left position
+        const logoY = 15; // Same Y position as your header text
+        doc.addImage(logoImg.src, 'JPEG', logoX, logoY, logoWidth, logoHeight);
     }
-    
+} catch (e) {
+    console.log("Could not add logo to PDF", e);
+}
 
 // Header section - Centered (same Y position as logo)
+doc.setFontSize(16);
 doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-     doc.text("Indira Group of Institutes", centerX, 22, { align: 'center' });
-   doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(70, 70, 70); // Dark gray
-    doc.text("Address: 89/2-A, New Pune-Mumbai Highway, Tathawade, Pune - 411033", centerX, 28, { align: 'center' });
-    doc.text("Phone: +91 20 6674 1234 | Email: placement@indira.edu | Website: www.indira.edu", centerX, 33, { align: 'center' });
+doc.text("Indira Group of Institutes", centerX, 25, { align: 'center' });
 
-
+doc.setFontSize(10);
+doc.setFont("helvetica", "normal");
+doc.text("Address: 123, XYZ Road, Pune, Maharashtra, India", centerX, 32, { align: 'center' });
+doc.text("Phone: +91 123 456 7890 | Email: info@indira.edu | Website: indirauniversity.edu.in", 
+         centerX, 39, { align: 'center' });
 doc.text(" ", centerX, 46, { align: 'center' }); // Extra blank line
 
 // Centered divider line
