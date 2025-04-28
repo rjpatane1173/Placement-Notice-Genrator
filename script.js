@@ -251,7 +251,7 @@ Pune.`;
         if (logoImg && logoImg.src) {
             const logoWidth = 30;
             const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
-            const logoX = centerX - (logoWidth / 2);
+            const logoX = leftX - (logoWidth / 2);
             doc.addImage(logoImg.src, 'JPEG', logoX, 15, logoWidth, logoHeight);
         }
     } catch (e) {
@@ -280,7 +280,7 @@ Pune.`;
     doc.text("INDIRA", centerX, 55, { align: 'center' });
     
     doc.setFontSize(16);
-    doc.text("PLACEMENT NOTICE", centerX, 65, { align: 'center' });
+    // doc.text("PLACEMENT NOTICE", centerX, 65, { align: 'center' });
     
     // Process notice text
     const formattedNotice = noticeText
