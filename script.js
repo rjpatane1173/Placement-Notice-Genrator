@@ -216,63 +216,122 @@ Pune.`;
         });
 
       function generatePdf() {
-        const company = document.getElementById("company").value;
-        const noticeText = document.getElementById("generatedNotice").textContent;
-        
-        const doc = new jsPDF();
-        
-        doc.setProperties({
-          title: `Placement Notice - ${company}`,
-          subject: 'Placement Notice',
-          author: 'Indira Group of Institutes',
-          keywords: 'placement, notice, job',
-          creator: 'Placement Notice Generator'
-        });
-        
-        try {
-          const logoImg = document.getElementById("logoImage");
-          if (logoImg && logoImg.src) {
-            doc.addImage(logoImg.src, 'JPEG', 15, 15, 30, 0);
-          }
-        } catch (e) {
-          console.log("Could not add logo to PDF", e);
+    const company = document.getElementById("company").value;
+    const noticeText = document.getElementById("generatedNotice").textContent;
+    
+    // Create PDF with better settings
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+    });
+    
+    // Set document properties
+    doc.setProperties({
+        title: `Placement Notice - ${company}`,
+        subject: 'Placement Notice',
+        author: 'Indira Group of Institutes',
+        keywords: 'placement, notice, job',
+        creator: 'Placement Notice Generator',
+        creationDate: new Date()
+    });
+    
+    // Add metadata
+    doc.setLanguage('en-IN'); // English India
+    doc.setFont('helvetica');
+    
+    // Try to add logo
+    try {
+        const logoImg = document.getElementById("logoImage");
+        if (logoImg && logoImg.src) {
+            // Maintain aspect ratio for logo
+            const logoWidth = 30;
+            const logoHeight = (logoImg.naturalHeight / logoImg.naturalWidth) * logoWidth;
+            doc.addImage(logoImg.src, 'JPEG', 15, 15, logoWidth, logoHeight);
         }
-        
-        doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
-        doc.text("Indira Group of Institutes", 50, 20);
-        
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text("Address: 123, XYZ Road, Pune, Maharashtra, India", 50, 27);
-        doc.text("Phone: +91 123 456 7890 | Email: info@indira.edu | Website: indirauniversity.edu.in", 50, 34);
-        
-        doc.setDrawColor(200, 200, 200);
-        doc.line(15, 40, 195, 40);
-        
-        doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.text("PLACEMENT NOTICE", 105, 50, { align: 'center' });
-        
-        const formattedNotice = noticeText
-          .replace(/\*/g, '')
-          .split('\n')
-          .filter(line => line.trim() !== '');
-        
-        doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
-        
-        let yPosition = 60;
-        formattedNotice.forEach(line => {
-          if (yPosition > 270) {
+    } catch (e) {
+        console.log("Could not add logo to PDF", e);
+    }
+    
+    // Header section
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Indira Group of Institutes", 50, 20);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Address: 123, XYZ Road, Pune, Maharashtra, India", 50, 27);
+    doc.text("Phone: +91 123 456 7890 | Email: info@indira.edu | Website: indirauniversity.edu.in", 50, 34);
+    
+    // Divider line
+    doc.setDrawColor(100, 100, 100);
+    doc.setLineWidth(0.3);
+    doc.line(15, 40, 195, 40);
+    
+    // Title
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("PLACEMENT NOTICE", 105, 50, { align: 'center' });
+    
+    // Process notice text
+    const formattedNotice = noticeText
+        .replace(/\*/g, '')
+        .split('\n')
+        .filter(line => line.trim() !== '');
+    
+    // Main content
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    
+    let yPosition = 60;
+    const lineHeight = 7;
+    const pageWidth = 180;
+    const marginLeft = 15;
+    const marginRight = 15;
+    const pageBottom = 280;
+    
+    formattedNotice.forEach(line => {
+        if (yPosition > pageBottom) {
             doc.addPage();
             yPosition = 20;
-          }
-          
-          const lines = doc.splitTextToSize(line, 180);
-          doc.text(lines, 15, yPosition);
-          yPosition += lines.length * 7;
-        });
+        }
         
-        doc.save(`Placement_Notice_${company.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
-      }
+        // Handle bold text (if marked with **)
+        if (line.includes('**')) {
+            const boldParts = line.split('**');
+            let xPos = marginLeft;
+            
+            for (let i = 0; i < boldParts.length; i++) {
+                if (i % 2 === 0) {
+                    doc.setFont("helvetica", "normal");
+                } else {
+                    doc.setFont("helvetica", "bold");
+                }
+                
+                const textWidth = doc.getTextWidth(boldParts[i]);
+                doc.text(boldParts[i], xPos, yPosition);
+                xPos += textWidth;
+            }
+            
+            yPosition += lineHeight;
+        } else {
+            // Regular text with automatic line wrapping
+            const lines = doc.splitTextToSize(line, pageWidth);
+            doc.text(lines, marginLeft, yPosition);
+            yPosition += lines.length * lineHeight;
+        }
+    });
+    
+    // Footer
+    const footerY = pageBottom + 10;
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+    doc.text("Generated by Indira Group of Institutes Placement Cell", 105, footerY, { align: 'center' });
+    doc.text(new Date().toLocaleDateString('en-IN'), 195, footerY, { align: 'right' });
+    
+    // Save PDF with sanitized filename
+    const sanitizedCompany = company.replace(/[^a-zA-Z0-9\s]/g, '_').replace(/\s+/g, '_');
+    const filename = `Placement_Notice_${sanitizedCompany}_${new Date().toISOString().slice(0, 10)}.pdf`;
+    doc.save(filename);
+}
